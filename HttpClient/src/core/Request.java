@@ -1,5 +1,7 @@
 package core;
 
+import java.io.IOException;
+import java.net.Socket;
 import java.util.HashMap;
 
 public class Request {
@@ -12,6 +14,42 @@ public class Request {
     private HashMap<String, String> headers;
     private String messageBody;
 
+    public static class Builder {
+
+        private final HttpMethod method;
+        private final String url; // www.google.com/get
+
+        //Optional parameters
+        private HashMap<String, String> headers;
+
+        public Builder(HttpMethod method, String url)
+        {
+            this.method = method;
+            this.url = url;
+        }
+
+        public Builder addHeader(String key, String value)
+        {
+            if (headers == null){
+                headers = new HashMap<>();
+            }
+
+            headers.put(key, value);
+
+            return this;
+        }
+    }
+
+    public Request(String host) throws IOException
+    {
+        setMethod(HttpMethod.GET);
+    }
+
+    public Request(HttpMethod method, String host, String resource)
+    {
+
+    }
+
     public Request(HttpMethod method, String host, String resource, String httpVersion)
     {
 
@@ -19,15 +57,30 @@ public class Request {
 
     public String toString()
     {
+        StringBuilder requestString = new StringBuilder();
+
+
+
         return "Testing";
     }
 
-    private void handleRequestFormat() {
+
+    public Response send()
+    {
 
 
-
-
+        return null;
     }
+
+    public Request addHeader(String key, String value)
+    {
+        headers.put(key, value);
+        return this;
+    }
+
+    /*
+    GETTERS and SETTERS
+     */
 
     public HttpMethod getMethod() {
         return method;

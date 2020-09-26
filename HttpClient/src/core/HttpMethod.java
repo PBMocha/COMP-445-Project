@@ -2,22 +2,29 @@ package core;
 
 public enum HttpMethod {
 
-    GET(1),
-    POST(2),
-    PUT(3),
-    PATCH(4),
-    DELETE(5);
+    GET("GET"),
+    POST("POST"),
+    PUT("PUT"),
+    PATCH("PATCH"),
+    DELETE("DELETE");
 
-    private int value;
+    private String value;
 
-    private HttpMethod(int value)
+    HttpMethod(String value)
     {
         this.value = value;
     }
 
-    public int getValue()
+    public String getValue()
     {
         return value;
     }
+
+    public void setValue()
+    {
+
+    }
+
+
 
 }

@@ -19,22 +19,23 @@ public class HttpClient
     public void startHttpConnection(String url)
     {
         try {
+
             clientSocket = new Socket(url, 80);
 
             out = new OutputStreamWriter(clientSocket.getOutputStream());
 
+            //out.write(Response )
             out.write("GET /status/418 HTTP/1.0\r\nUser-Agent: Hello\r\n\r\n");
             out.flush();
 
             Response response = new Response(clientSocket.getInputStream());
-
+            System.out.println(response);
 
         } catch(IOException e) {
             e.printStackTrace();
         } finally {
             this.closeConnection();
         }
-
     }
 
     public void closeConnection()
@@ -49,9 +50,14 @@ public class HttpClient
         }
     }
 
-    public void send(Request request)
+    private void handleRequest(Request request)
     {
 
+    }
+
+    public Response send(Request request)
+    {
+        return null;
     }
 
     private void parseUrl()
@@ -60,12 +66,12 @@ public class HttpClient
     }
 
     //Http Methods
-    public Response get(String url)
+    public Response get(Request request)
     {
         return null;
     }
 
-    public Response post(String url)
+    public Response post(Request request)
     {
         return null;
     }
@@ -77,8 +83,6 @@ public class HttpClient
 
 
         HttpClient client = new HttpClient();
-
-
 
         client.startHttpConnection("www.httpbin.org");
     }
