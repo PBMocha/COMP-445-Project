@@ -14,21 +14,32 @@ public class Request {
     private HashMap<String, String> headers;
     private String messageBody;
 
-    public static class Builder {
+    public static class RequestBuilder {
 
         private final HttpMethod method;
-        private final String url; // www.google.com/get
+        private final String host; // www.google.com/get
+        private final String resource;
 
         //Optional parameters
         private HashMap<String, String> headers;
+        private String body;
+        private String httpVersion;
 
-        public Builder(HttpMethod method, String url)
+        public RequestBuilder(HttpMethod method, String host, String resource)
         {
             this.method = method;
-            this.url = url;
+            this.host = host;
+            this.resource = resource;
+            this.httpVersion = "HTTP/1.0";
         }
 
-        public Builder addHeader(String key, String value)
+        public RequestBuilder version(String version)
+        {
+            this.httpVersion = version;
+            return this;
+        }
+
+        public RequestBuilder header(String key, String value)
         {
             if (headers == null){
                 headers = new HashMap<>();
@@ -38,11 +49,35 @@ public class Request {
 
             return this;
         }
+        public RequestBuilder body(String body)
+        {
+            this.body = body;
+            return this;
+        }
+
+
+        public Request build()
+        {
+            return new Request(this);
+        }
+
     }
 
-    public Request(String host) throws IOException
+    public Request(RequestBuilder builder)
+    {
+        setHttpVersion(builder.httpVersion);
+        setMethod(builder.method);
+        setHost(builder.host);
+        setResource(builder.resource);
+        setHeaders(builder.headers);
+        setMessageBody(builder.body);
+    }
+
+    public Request(String host, String resource)
     {
         setMethod(HttpMethod.GET);
+        setHost(host);
+        setResource(resource);
     }
 
     public Request(HttpMethod method, String host, String resource)
@@ -50,26 +85,27 @@ public class Request {
 
     }
 
-    public Request(HttpMethod method, String host, String resource, String httpVersion)
-    {
-
-    }
-
+    /**
+     *
+     * @return http request string
+     */
     public String toString()
     {
         StringBuilder requestString = new StringBuilder();
 
+        requestString.append(method + " " + resource + " " + httpVersion);
+        requestString.append(System.lineSeparator());
 
+        for(String key : headers.keySet())
+        {
+            requestString.append(key + ": " + headers.get(key));
+            requestString.append(System.lineSeparator());
+        }
+        requestString.append(System.lineSeparator());
+        requestString.append(messageBody);
+        //requestString.append(System.lineSeparator());
 
-        return "Testing";
-    }
-
-
-    public Response send()
-    {
-
-
-        return null;
+        return requestString.toString();
     }
 
     public Request addHeader(String key, String value)

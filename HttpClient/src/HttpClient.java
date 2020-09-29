@@ -1,3 +1,4 @@
+import core.HttpMethod;
 import core.Request;
 import core.Response;
 
@@ -42,7 +43,6 @@ public class HttpClient
     {
         try{    
             out.close();
-            //in.close();
             clientSocket.close();
 
         } catch(IOException e) {
@@ -50,41 +50,113 @@ public class HttpClient
         }
     }
 
-    private void handleRequest(Request request)
-    {
-
-    }
-
+    /**
+     * Send a custom request
+     * @param request
+     * @return Response
+     */
     public Response send(Request request)
     {
+        try {
+
+            clientSocket = new Socket(request.getHost(), 80);
+            out = new OutputStreamWriter(clientSocket.getOutputStream());
+            out.write(request.toString());
+            out.flush();
+
+            //Will parse to Response object
+            return new Response(clientSocket.getInputStream());
+
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        } finally {
+            closeConnection();
+        }
+
         return null;
     }
 
-    private void parseUrl()
+    private String[] divideUrlString(String url)
     {
+        //Split url to {host, resource},
+        // eg. "www.localhost.com/getresource" => {"www.localhost.com", "getResource"}
+        /*
+            Cases to consider from left to right:
+            1. url contains "http://" or "https://"
+            2. url contains port; "localhost.com:8000"
+            3.
+         */
 
+        //Ignore http and https
+        if (url.startsWith("http://") || url.startsWith("https://")) {
+            //System.out.println("Removing Http(s) extension");
+            url = url.replace("https://", "");
+            //System.out.println(url);
+        }
+
+        //Take in account for url port
+
+        //
+        String[] urlSet = url.split("/", 2);
+
+        urlSet[1] = "/" + urlSet[1];
+
+        if (urlSet.length != 2)
+        {
+            return null;
+        }
+
+        return urlSet;
     }
+
+    public void printUrl(String url)
+    {
+        String[] urlParts = divideUrlString(url);
+
+        if (urlParts == null)
+        {
+            System.out.println("Invalid url");
+            return;
+        }
+
+        for (String part : urlParts)
+        {
+            System.out.println(part);
+        }
+    }
+
 
     //Http Methods
-    public Response get(Request request)
+    public Response get(String request)
     {
-        return null;
+        String[] parsedUrl = divideUrlString(request);
+
+        String host = parsedUrl[0];
+        String resource = parsedUrl[1];
+
+        return this.send(new Request(host, resource));
     }
 
-    public Response post(Request request)
+    public Response post(String request)
     {
         return null;
     }
 
     public static void main(String[] args)
     {
-
         //Parse command line arguments
 
-
         HttpClient client = new HttpClient();
+        Request request = new Request.RequestBuilder(HttpMethod.GET, "www.httpbin.org", "/status/418")
+                .header("User-Agent", "LOL")
+                .header("Content-Type", "application/json")
+                .build();
 
-        client.startHttpConnection("www.httpbin.org");
+        Response response = client.send(request);
+        System.out.println(response);
+
+
     }
 
 }
