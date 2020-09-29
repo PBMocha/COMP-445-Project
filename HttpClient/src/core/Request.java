@@ -31,6 +31,8 @@ public class Request {
             this.host = host;
             this.resource = resource;
             this.httpVersion = "HTTP/1.0";
+            this.headers = new HashMap<>();
+            this.body = "";
         }
 
         public RequestBuilder version(String version)
@@ -41,9 +43,6 @@ public class Request {
 
         public RequestBuilder header(String key, String value)
         {
-            if (headers == null){
-                headers = new HashMap<>();
-            }
 
             headers.put(key, value);
 

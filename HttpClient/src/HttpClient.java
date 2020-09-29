@@ -148,10 +148,11 @@ public class HttpClient
         //Parse command line arguments
 
         HttpClient client = new HttpClient();
-        Request request = new Request.RequestBuilder(HttpMethod.GET, "www.httpbin.org", "/status/418")
-                .header("User-Agent", "LOL")
-                .header("Content-Type", "application/json")
-                .build();
+        Request request = new Request.RequestBuilder(HttpMethod.GET, "www.httpbin.org", "/status/418").build();
+        request.addHeader("User-Message", "Hello");
+
+        System.out.println(request);
+
 
         Response response = client.send(request);
         System.out.println(response);
