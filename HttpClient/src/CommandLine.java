@@ -1,6 +1,9 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import core.HttpMethod;
 import core.Request;
+import core.Url;
 
 public class CommandLine {
 
@@ -108,7 +111,7 @@ public class CommandLine {
         }
 
         HttpClient client = new HttpClient();
-        Request request = new Request.RequestBuilder();
+        Request request = new Request.RequestBuilder(HttpMethod.GET, new Url(this.url())).build();
 
         if (args[0].equals("get")) {
 

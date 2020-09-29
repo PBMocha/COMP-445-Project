@@ -1,6 +1,7 @@
 import core.HttpMethod;
 import core.Request;
 import core.Response;
+import core.Url;
 
 import java.io.*;
 import java.net.*;
@@ -148,7 +149,7 @@ public class HttpClient
         //Parse command line arguments
 
         HttpClient client = new HttpClient();
-        Request request = new Request.RequestBuilder(HttpMethod.GET, "www.httpbin.org", "/status/418").build();
+        Request request = new Request.RequestBuilder(HttpMethod.GET, new Url("www.httpbin.org/status/418")).build();
         request.addHeader("User-Message", "Hello");
 
         System.out.println(request);

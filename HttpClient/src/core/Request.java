@@ -25,11 +25,11 @@ public class Request {
         private String body;
         private String httpVersion;
 
-        public RequestBuilder(HttpMethod method, String host, String resource)
+        public RequestBuilder(HttpMethod method, Url url)
         {
             this.method = method;
-            this.host = host;
-            this.resource = resource;
+            this.host = url.getHost();
+            this.resource = url.getResource();
             this.httpVersion = "HTTP/1.0";
             this.headers = new HashMap<>();
             this.body = "";
