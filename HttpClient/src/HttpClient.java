@@ -153,7 +153,6 @@ public class HttpClient
 
         System.out.println(request);
 
-
         Response response = client.send(request);
         System.out.println(response);
 

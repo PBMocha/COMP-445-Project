@@ -28,17 +28,39 @@ public class CommandLine {
         return false;
     }
 
-    public void parse()
+    public void handleBody()
     {
 
-        if (this.optionPresent("-v"))
-        {
-            //Activate Verbose Option
+    }
+
+    //Find and store header values from args
+    public boolean handleHeaders()
+    {
+        HashMap<String, String> headers = new HashMap<>();
+
+        for (int i = 0; i < args.length; i++) {
+            if (args[i].equals("-h")) {
+
+                String[] headerParts = args[i+1].split(":");
+
+                //Need to validate header parts input -> check headerParts is length == 2
+                if (headerParts.length != 2) return false;
+
+                headers.put(headerParts[0], headerParts[1]);
+            }
         }
+
+        return true;
+    }
+
+    public void handleRequest()
+    {
+
 
         if (this.optionPresent("-h"))
         {
             //Store all header Key:Value pairs into HashMap
+            handleHeaders();
         }
 
         if (this.optionPresent("-d"))
@@ -55,6 +77,8 @@ public class CommandLine {
 
     public void executeCommand()
     {
+
+
 
     }
 
