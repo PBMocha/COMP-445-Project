@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import core.Request;
 
 public class CommandLine {
 
@@ -28,7 +29,27 @@ public class CommandLine {
         return false;
     }
 
-    public void handleBody()
+    /**
+     * Gets value of existing option eg. cmd -v 123 will return 123 if -v is the input
+     * @param option
+     * @return String value
+     */
+    public String optionValue(String option) {
+        if (!optionPresent(option)) {
+            return null;
+        }
+
+        for (int i = 0; i < args.length; i++) {
+            if (option.equals(args[i])) {
+                return args[i+1];
+            }
+        }
+
+        return null;
+
+    }
+
+    public void handleBody(Request request)
     {
 
     }
@@ -53,9 +74,13 @@ public class CommandLine {
         return true;
     }
 
+    public String url()
+    {
+        return args[args.length - 1];
+    }
+
     public void handleRequest()
     {
-
 
         if (this.optionPresent("-h"))
         {
@@ -77,9 +102,23 @@ public class CommandLine {
 
     public void executeCommand()
     {
+        if (args[0].equals("help")) {
+            helpMe();
+            return;
+        }
 
+        HttpClient client = new HttpClient();
+        Request request = new Request.RequestBuilder();
 
+        if (args[0].equals("get")) {
 
+        } else if (args[0].equals("post")) {
+
+        }
+    }
+
+    public void helpMe() {
+        System.out.println("Help me please");
     }
 
 
