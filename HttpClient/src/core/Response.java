@@ -9,13 +9,12 @@ public class Response {
     private String statusCode;
     private HashMap<String, String> headers;
     private String dataRaw;
-    private HashMap<String, String> data;
     private BufferedReader input;
 
     public Response(InputStream in)
     {
         headers = new HashMap<String, String>();
-        data = new HashMap<>();
+
         dataRaw = "";
 
         parseResponse(in);
@@ -72,7 +71,6 @@ public class Response {
     public String toString()
     {
         StringBuilder stringBuilder = new StringBuilder();
-        String line;
 
         stringBuilder.append(statusCode);
         stringBuilder.append(System.lineSeparator());
@@ -89,10 +87,6 @@ public class Response {
 
     public HashMap<String, String> getHeaders() {
         return headers;
-    }
-
-    public HashMap<String, String> getData() {
-        return data;
     }
 
     public String getStatusCode() {

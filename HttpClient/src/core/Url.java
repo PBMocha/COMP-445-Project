@@ -33,11 +33,14 @@ public final class Url {
             3.
          */
 
+        //Cases to consider; quotes singular or double will break the parsing for the url
+        fullUrl = fullUrl.replace("\'", "");
+
         //Ignore http and https
         if (fullUrl.startsWith("http://") || fullUrl.startsWith("https://")) {
             //System.out.println("Removing Http(s) extension");
-            fullUrl = fullUrl.replace("https://", "");
-            //System.out.println(url);
+            fullUrl = fullUrl.replace("http://", "");
+            //System.out.println(fullUrl);
         }
 
         //TODO: Store the port

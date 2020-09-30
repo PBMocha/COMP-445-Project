@@ -79,11 +79,6 @@ public class Request {
         setResource(resource);
     }
 
-    public Request(HttpMethod method, String host, String resource)
-    {
-
-    }
-
     /**
      *
      * @return http request string
