@@ -73,13 +73,12 @@ public class CommandLine {
 
     public String url()
     {
-
-
         return args[args.length-1];
     }
 
     public void handleRequest(Request request)
     {
+
         if (this.optionPresent("-h"))
         {
             //Store all header Key:Value pairs into HashMap
@@ -89,8 +88,6 @@ public class CommandLine {
                 System.out.println(e.getMessage());
             }
         }
-
-        //
 
         if (this.optionPresent("-d"))
         {
@@ -154,7 +151,9 @@ public class CommandLine {
                 return;
             }
 
-            request = new Request.RequestBuilder(HttpMethod.GET, url).build();
+            request = new Request.RequestBuilder(HttpMethod.GET, url)
+                    .header("User-Agent", "httpc/1.0")
+                    .build();
 
             handleRequest(request);
 
@@ -170,9 +169,13 @@ public class CommandLine {
         }
         if (args[0].equals("post")) {
 
-            request = new Request.RequestBuilder(HttpMethod.POST, url).build();
+            request = new Request.RequestBuilder(HttpMethod.POST, url)
+                    .header("User-Agent", "httpc/1.0")
+                    .build();
             handleRequest(request);
             Response response = client.send(request);
+
+            //System.out.println(request.getMessageBody());
 
             if (isVerbose) {
                 System.out.println(response);
@@ -220,21 +223,14 @@ public class CommandLine {
 
     public static void main(String[] args) {
 
-//        for (String arg : args) {
-//            System.out.println(arg);
-//        }
-//
-//        System.out.println();
+        for (String arg : args) {
+            System.out.println(arg);
+        }
+
+        System.out.println();
 
         CommandLine scuffedCurl = new CommandLine(args);
         scuffedCurl.executeCommand();
-
-
-
-//        HttpClient client = new HttpClient();
-//        Request request = new Request.RequestBuilder(HttpMethod.GET, new Url(args[1])).build();
-//        System.out.println(client.send(request).toString());
-
     }
 
 }

@@ -10,7 +10,6 @@ public class Request {
     private String host;
     private String resource;
     private String httpVersion;
-    private String payload;
     private HashMap<String, String> headers;
     private String messageBody;
 
@@ -89,6 +88,12 @@ public class Request {
 
         requestString.append(method + " " + resource + " " + httpVersion);
         requestString.append(System.lineSeparator());
+        requestString.append("Host: " + host);
+        requestString.append(System.lineSeparator());
+
+        if (messageBody.length() > 0) {
+            addHeader("Content-Length", String.valueOf(messageBody.length()));
+        }
 
         for(String key : headers.keySet())
         {
@@ -128,10 +133,6 @@ public class Request {
         return httpVersion;
     }
 
-    public String getPayload() {
-        return payload;
-    }
-
     public HashMap<String, String> getHeaders() {
         return headers;
     }
@@ -154,10 +155,6 @@ public class Request {
 
     public void setHttpVersion(String httpVersion) {
         this.httpVersion = httpVersion;
-    }
-
-    public void setPayload(String payload) {
-        this.payload = payload;
     }
 
     public void setHeaders(HashMap<String, String> headers) {

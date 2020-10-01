@@ -1,5 +1,7 @@
 package core;
 
+import java.net.URL;
+
 /**
  * URL class that is responsible for splitting the url into its seperate segments
  */
@@ -20,6 +22,7 @@ public final class Url {
         this.fullUrl = fullUrl;
         //this.port = "";
         divideUrlString();
+
     }
 
     private void divideUrlString()
@@ -39,7 +42,7 @@ public final class Url {
         //Ignore http and https
         if (fullUrl.startsWith("http://") || fullUrl.startsWith("https://")) {
             //System.out.println("Removing Http(s) extension");
-            fullUrl = fullUrl.replace("http://", "");
+            fullUrl = fullUrl.replace("https://", "");
             //System.out.println(fullUrl);
         }
 
