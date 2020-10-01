@@ -136,12 +136,9 @@ public class CommandLine {
             return;
         }
 
-        HttpClient client = new HttpClient();
-        Request request;
-
-        isVerbose = optionPresent("-v");
-
         Url url = new Url(url());
+        HttpClient client = new HttpClient();
+        Request request = new Request.RequestBuilder(HttpMethod.GET, url).header("User-Agent", "httpc/1.0").build();
 
         if (args[0].equals("get")) {
 
@@ -150,41 +147,23 @@ public class CommandLine {
                 //System.exit(1);
                 return;
             }
+        }
+        else if (args[0].equals("post")) {
+            request.setMethod(HttpMethod.POST);
+        }
 
-            request = new Request.RequestBuilder(HttpMethod.GET, url)
-                    .header("User-Agent", "httpc/1.0")
-                    .build();
+        //Inject argument values into request
+        handleRequest(request);
 
-            handleRequest(request);
+        //Send request
+        Response response = client.send(request);
 
-            Response response = client.send(request);
-
-            if (isVerbose) {
-                System.out.println(response);
-                return;
-            }
-
-            System.out.println(response.getDataRaw());
+        if (optionPresent("-v")) {
+            System.out.println(response);
             return;
         }
-        if (args[0].equals("post")) {
 
-            request = new Request.RequestBuilder(HttpMethod.POST, url)
-                    .header("User-Agent", "httpc/1.0")
-                    .build();
-            handleRequest(request);
-            Response response = client.send(request);
-
-            //System.out.println(request.getMessageBody());
-
-            if (isVerbose) {
-                System.out.println(response);
-                return;
-            }
-
-            System.out.println(response.getDataRaw());
-            return;
-        }
+        System.out.println(response.getDataRaw());
 
     }
 
