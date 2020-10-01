@@ -123,21 +123,30 @@ public class CommandLine {
         }
     }
 
+    private boolean validateCommand() {
+
+        return  args[0].equals("help") ||
+                args[0].equals("get") ||
+                args[0].equals("post");
+    }
+
     //The root of the program | the Highest layer
     public void executeCommand()
     {
+
         if (args.length < 1) {
             System.out.println("Invalid number of arguments");
             return;
         }
 
-        if (args[0].equals("help")) {
+        if (args[0].equals("help") || !validateCommand() ) {
             helpMe();
             return;
         }
 
         Url url = new Url(url());
         HttpClient client = new HttpClient();
+
         Request request = new Request.RequestBuilder(HttpMethod.GET, url).header("User-Agent", "httpc/1.0").build();
 
         if (args[0].equals("get")) {
@@ -149,6 +158,11 @@ public class CommandLine {
             }
         }
         else if (args[0].equals("post")) {
+
+            if (optionPresent("-d") && optionPresent("-f")) {
+                System.out.println("Cannot have  both inline-data and file-data arguments!");
+            }
+
             request.setMethod(HttpMethod.POST);
         }
 
