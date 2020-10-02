@@ -12,11 +12,6 @@ public final class Url {
     private String resource;
     private String port;
 
-    public Url()
-    {
-        //TODO: implement later
-    }
-
     public Url(String fullUrl)
     {
         this.fullUrl = fullUrl;
@@ -40,16 +35,25 @@ public final class Url {
         fullUrl = fullUrl.replace("\'", "");
 
         //Ignore http and https
-        if (fullUrl.startsWith("http://") || fullUrl.startsWith("https://")) {
+        if (fullUrl.startsWith("http://")) {
             //System.out.println("Removing Http(s) extension");
-            fullUrl = fullUrl.replace("https://", "");
+            fullUrl = fullUrl.replace("http://", "");
             //System.out.println(fullUrl);
+        }
+        else if (fullUrl.startsWith("https://")) {
+            fullUrl = fullUrl.replace("https://", "");
         }
 
         //TODO: Store the port
 
-        //
+        //TODO: Make below more robust; Possibly use regex for matching www.***.**/
         String[] urlSet = fullUrl.split("/", 2);
+        //If no resource path is given; default to /
+        if (urlSet.length < 2) {
+            host = urlSet[0];
+            resource = "/";
+            return;
+        }
 
         host = urlSet[0];
         resource = "/" + urlSet[1];

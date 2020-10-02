@@ -181,7 +181,7 @@ public class CommandLine {
 
     }
 
-    public void helpMe() {
+    private void helpMe() {
 
         //If only help
         if (args.length == 1) {
@@ -214,16 +214,5 @@ public class CommandLine {
     }
 
 
-    public static void main(String[] args) {
-
-        for (String arg : args) {
-            System.out.println(arg);
-        }
-
-        System.out.println();
-
-        CommandLine scuffedCurl = new CommandLine(args);
-        scuffedCurl.executeCommand();
-    }
 
 }
