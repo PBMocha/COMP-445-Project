@@ -176,6 +176,9 @@ public class CommandLine {
         	else if (optionPresent("-d") && optionPresent("-f")) {
                 System.out.println("Cannot have  both inline-data and file-data arguments!");
         	}
+
+        	request.setMethod(HttpMethod.TRACE);
+        	request.addHeader("Content-Type", "message/http");
         }
 
         //Inject argument values into request
@@ -184,7 +187,7 @@ public class CommandLine {
         //Send request
         Response response = client.send(request);
 
-        if (optionPresent("-v")) {
+        if (optionPresent("-v") || args[0].equals("trace")) {
             System.out.println(response);
             return;
         }
@@ -221,7 +224,12 @@ public class CommandLine {
                     "\t-f file\tAssociates the content of a file to the body HTTP POST request.\n\n" +
                     "Either [-d] or [-f] can be used but not both.");
         }
-
+        else if (args[1].equals("trace")) {
+            System.out.println("Usage: httpc trace URL allows the client to see what is being received\n"
+                    + "at the other end of the request chain and use that data for testing or \n"
+                    + "diagnostic information.\n" +
+                    "\t-h key:value\t Associates headers to HTTP Request with the format 'key:value'.");
+        }
 
     }
 

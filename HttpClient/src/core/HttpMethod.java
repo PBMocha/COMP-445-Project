@@ -6,7 +6,8 @@ public enum HttpMethod {
     POST("POST"),
     PUT("PUT"),
     PATCH("PATCH"),
-    DELETE("DELETE");
+    DELETE("DELETE"),
+    TRACE("TRACE");
 
     private String value;
 
@@ -19,12 +20,6 @@ public enum HttpMethod {
     {
         return value;
     }
-
-    public void setValue()
-    {
-
-    }
-
 
 
 }

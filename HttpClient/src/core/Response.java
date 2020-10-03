@@ -79,7 +79,7 @@ public class Response {
             stringBuilder.append(key + ": " + headers.get(key));
             stringBuilder.append(System.lineSeparator());
         }
-
+        stringBuilder.append(System.lineSeparator());
         stringBuilder.append(dataRaw);
 
         return stringBuilder.toString();

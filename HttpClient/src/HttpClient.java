@@ -91,21 +91,4 @@ public class HttpClient
         return send(request);
     }
 
-     public static void main(String[] args) {
-         //Parse command line arguments
-
-         HttpClient client = new HttpClient();
-         String test = "http://httpbin.org/get?course=networking&assignment=1";
-         String test2 = "www.httpbin.org/status/418";
-         Request request = new Request.RequestBuilder(HttpMethod.GET, new Url(test)).build();
-         request.addHeader("User-Message", "Hello");
-
-         System.out.println(request);
-
-         Response response = client.send(request);
-         System.out.println(response);
-
-
-     }
-
 }
