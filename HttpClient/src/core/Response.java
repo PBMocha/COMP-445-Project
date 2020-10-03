@@ -34,7 +34,7 @@ public class Response {
             while((line = input.readLine()) != null) {
 
                 //End of header content
-                if (line.isBlank())
+                if (line.isEmpty()) // == null?
                 {
                     break;
                 }
@@ -102,9 +102,5 @@ public class Response {
     {
         return dataRaw;
     }
-
-
-
-
 
 }

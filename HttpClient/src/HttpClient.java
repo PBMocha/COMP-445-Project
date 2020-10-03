@@ -53,6 +53,16 @@ public class HttpClient
     //Http Methods
 
     /**
+     * @param urlStr
+     * @return
+     */
+    public Response trace(String urlStr) {
+    	Url url = new Url(urlStr);
+    	return send(new Request.RequestBuilder(HttpMethod.GET, url).build());
+    }
+    
+    
+    /**
      *
      * @param urlStr
      * @return
@@ -81,20 +91,21 @@ public class HttpClient
         return send(request);
     }
 
-    // public static void main(String[] args)
-    // {
-    //     //Parse command line arguments
+     public static void main(String[] args) {
+         //Parse command line arguments
 
-    //     HttpClient client = new HttpClient();
-    //     Request request = new Request.RequestBuilder(HttpMethod.GET, new Url("www.httpbin.org/status/418")).build();
-    //     request.addHeader("User-Message", "Hello");
+         HttpClient client = new HttpClient();
+         String test = "http://httpbin.org/get?course=networking&assignment=1";
+         String test2 = "www.httpbin.org/status/418";
+         Request request = new Request.RequestBuilder(HttpMethod.GET, new Url(test)).build();
+         request.addHeader("User-Message", "Hello");
 
-    //     System.out.println(request);
+         System.out.println(request);
 
-    //     Response response = client.send(request);
-    //     System.out.println(response);
+         Response response = client.send(request);
+         System.out.println(response);
 
 
-    // }
+     }
 
 }

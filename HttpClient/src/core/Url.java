@@ -1,6 +1,8 @@
 package core;
 
 import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * URL class that is responsible for splitting the url into its seperate segments
@@ -15,7 +17,7 @@ public final class Url {
     public Url(String fullUrl)
     {
         this.fullUrl = fullUrl;
-        //this.port = "";
+        this.port = "";
         divideUrlString();
 
     }
@@ -44,8 +46,6 @@ public final class Url {
             fullUrl = fullUrl.replace("https://", "");
         }
 
-        //TODO: Store the port
-
         //TODO: Make below more robust; Possibly use regex for matching www.***.**/
         String[] urlSet = fullUrl.split("/", 2);
         //If no resource path is given; default to /
@@ -57,6 +57,16 @@ public final class Url {
 
         host = urlSet[0];
         resource = "/" + urlSet[1];
+        
+        //Finding port
+        Pattern p = Pattern.compile("[:]", Pattern.CASE_INSENSITIVE);
+        Matcher m = p.matcher(host);
+        if (m.find()) {
+        	for (int i =m.start()+1; i < host.length(); i++) {
+            	port += host.charAt(i);
+        	}
+        	host = host.replace(":" +port, "");
+        }
     }
 
     @Override

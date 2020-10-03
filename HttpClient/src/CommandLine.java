@@ -127,7 +127,8 @@ public class CommandLine {
 
         return  args[0].equals("help") ||
                 args[0].equals("get") ||
-                args[0].equals("post");
+                args[0].equals("post") ||
+                args[0].equals("trace");
     }
 
     //The root of the program | the Highest layer
@@ -164,6 +165,17 @@ public class CommandLine {
             }
 
             request.setMethod(HttpMethod.POST);
+        }
+        else if (args[0].equals("trace")) {
+        	
+        	if (optionPresent("-d") || optionPresent("-f")) {
+                System.out.println("Cannot have content body for HTTP TRACE request.");
+                //System.exit(1);
+                return;
+            }
+        	else if (optionPresent("-d") && optionPresent("-f")) {
+                System.out.println("Cannot have  both inline-data and file-data arguments!");
+        	}
         }
 
         //Inject argument values into request
