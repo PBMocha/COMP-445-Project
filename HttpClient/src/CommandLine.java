@@ -44,7 +44,13 @@ public class CommandLine {
     public String optionValue(String option) {
 
         for (int i = 0; i < args.length; i++) {
+
             if (option.equals(args[i])) {
+
+                //Returns null if end of string
+                if (i+1 > args.length) {
+                    return null;
+                }
                 return args[i+1];
             }
         }
@@ -73,6 +79,12 @@ public class CommandLine {
 
     public String url()
     {
+        if (optionPresent("-o")) {
+
+
+
+        }
+
         return args[args.length-1];
     }
 
@@ -175,6 +187,7 @@ public class CommandLine {
             }
         	else if (optionPresent("-d") && optionPresent("-f")) {
                 System.out.println("Cannot have  both inline-data and file-data arguments!");
+                return;
         	}
 
         	request.setMethod(HttpMethod.TRACE);
@@ -186,13 +199,26 @@ public class CommandLine {
 
         //Send request
         Response response = client.send(request);
+        String responseStr = (optionPresent("-v") || args[0].equals("trace")) ? response.toString() : response.getDataRaw();
 
-        if (optionPresent("-v") || args[0].equals("trace")) {
-            System.out.println(response);
-            return;
+        if (optionPresent("-o")) {
+
+            try {
+
+                FileWriter out = new FileWriter(new File(optionValue("-o")));
+                out.write(responseStr);
+
+                out.close();
+            } catch (FileNotFoundException e) {
+                System.out.println("Output file not found!");
+            } catch(IOException e) {
+                System.out.println(e.getMessage());
+            } finally {
+                return;
+            }
         }
 
-        System.out.println(response.getDataRaw());
+        System.out.println(responseStr);
 
     }
 
