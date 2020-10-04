@@ -85,5 +85,7 @@ public final class Url {
         return resource;
     }
 
+    public String getPort() { return port; }
+
 
 }

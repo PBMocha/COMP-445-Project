@@ -48,7 +48,7 @@ public class CommandLine {
             if (option.equals(args[i])) {
 
                 //Returns null if end of string
-                if (i+1 > args.length) {
+                if (i+1 >= args.length) {
                     return null;
                 }
                 return args[i+1];
@@ -79,16 +79,16 @@ public class CommandLine {
 
     public String url()
     {
-        if (optionPresent("-o")) {
+        if (optionPresent("-o") && optionValue("-o") != null) {
 
 
-
+            return args[args.length-3];
         }
 
         return args[args.length-1];
     }
 
-    public void handleRequest(Request request)
+    public void handleRequest(Request request) throws FileNotFoundException, IOException
     {
 
         if (this.optionPresent("-h"))
@@ -110,6 +110,7 @@ public class CommandLine {
         if (this.optionPresent("-f"))
         {
             //Get inline data from file
+
             try {
                 BufferedReader fileReader = new BufferedReader(new FileReader(new File(optionValue("-f"))));
 
@@ -128,9 +129,7 @@ public class CommandLine {
                 request.setMessageBody(contents.toString());
 
             } catch (FileNotFoundException e) {
-                System.out.println(e.getMessage());
-            } catch (IOException e) {
-                System.out.println(e.getMessage());
+                throw e;
             }
         }
     }
@@ -154,6 +153,12 @@ public class CommandLine {
 
         if (args[0].equals("help") || !validateCommand() ) {
             helpMe();
+            return;
+        }
+
+        if (optionPresent("-o") && optionValue("-o") == null) {
+
+            System.out.println("Invalid arguments! No output file specified!");
             return;
         }
 
@@ -195,8 +200,15 @@ public class CommandLine {
         }
 
         //Inject argument values into request
-        handleRequest(request);
-
+        try {
+            handleRequest(request);
+        } catch(FileNotFoundException e) {
+            System.out.println(e.getMessage());
+            return;
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+            return;
+        }
         //Send request
         Response response = client.send(request);
         String responseStr = (optionPresent("-v") || args[0].equals("trace")) ? response.toString() : response.getDataRaw();
@@ -213,9 +225,8 @@ public class CommandLine {
                 System.out.println("Output file not found!");
             } catch(IOException e) {
                 System.out.println(e.getMessage());
-            } finally {
-                return;
             }
+            return;
         }
 
         System.out.println(responseStr);
