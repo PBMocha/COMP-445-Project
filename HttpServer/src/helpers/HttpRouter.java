@@ -17,6 +17,7 @@ public class HttpRouter {
     private HashMap<String, File> routingTable;
 
 
+
     //State root directory to read and write files from.
     public HttpRouter(String rootDirectory) {
 

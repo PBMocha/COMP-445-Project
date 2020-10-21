@@ -1,5 +1,7 @@
 package core;
 
+import helpers.Method;
+
 import java.util.HashMap;
 
 public class Request {
@@ -22,6 +24,10 @@ public class Request {
         this.headers = new HashMap<>();
     }
 
+    public String getMethod() {
+        return method;
+    }
+
     public Request addHeader(String key, String value) {
         headers.put(key, value);
         return this;
@@ -41,6 +47,7 @@ public class Request {
         httpBuilder.append(method + " " + resource + " " + version + System.lineSeparator());
 
         headers.forEach((k, v) -> httpBuilder.append(k + ": " + v + System.lineSeparator()));
+        httpBuilder.append(System.lineSeparator());
         httpBuilder.append(body);
         return httpBuilder.toString();
     }

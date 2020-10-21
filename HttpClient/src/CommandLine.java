@@ -230,7 +230,6 @@ public class CommandLine {
         }
 
         System.out.println(responseStr);
-
     }
 
     private void helpMe() {

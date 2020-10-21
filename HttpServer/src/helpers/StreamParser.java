@@ -31,7 +31,7 @@ public class StreamParser {
         String[] requestLine = line.split(" ");
 
         Request request = new Request(requestLine[0], requestLine[1], requestLine[2]);
-        //System.out.println(request.toString());
+
         //Parse Headers
         line = reader.readLine();
         while (!line.isEmpty()) {
