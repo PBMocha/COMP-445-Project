@@ -4,7 +4,7 @@ import helpers.Method;
 
 import java.util.HashMap;
 
-public class Request {
+public class Request2 {
 
     private String method;
     private String resource;
@@ -12,11 +12,11 @@ public class Request {
     private HashMap<String, String> headers;
     private String body;
 
-    public Request(String method, String resource) {
+    public Request2(String method, String resource) {
         this(method, resource, "HTTP/1.0");
     }
 
-    public Request(String method, String resource, String version) {
+    public Request2(String method, String resource, String version) {
         this.method = method;
         this.resource = resource;
         this.version = version;
@@ -28,7 +28,7 @@ public class Request {
         return method;
     }
 
-    public Request addHeader(String key, String value) {
+    public Request2 addHeader(String key, String value) {
         headers.put(key, value);
         return this;
     }
@@ -36,9 +36,21 @@ public class Request {
     public String getHeader(String key) {
         return headers.get(key);
     }
+    
+    public String getResource() {
+    	return resource;
+    }
+    
+    public String getVersion() {
+    	return version;
+    }
 
     public void setBody(String body) {
         this.body = body;
+    }
+    
+    public String getBody() {
+    	return body;
     }
 
     public String toString() {
