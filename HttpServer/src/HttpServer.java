@@ -45,16 +45,13 @@ public class HttpServer {
 
                 //DataInputStream input = new DataInputStream(new BufferedInputStream(client.getInputStream()));
                 BufferedReader input = new BufferedReader(new InputStreamReader(client.getInputStream()));
-                //System.out.println("test2 req received"); //reaches here
 
                 //String rawRequest = StreamParser.readStream(input);
                 Request2 req = StreamParser.buildHttpRequest(input);
                 //input.close();
-                //System.out.println("pre req received");
 
                 //String rawRequest = input.readUTF();
                 System.out.println("Request Received:" + client.toString());
-                //System.out.println("after req received");
                 //Send back response to client
 
                 Response2 response = handleRequest(req);
@@ -90,10 +87,9 @@ public class HttpServer {
     }
 
     private Response2 handleRequest(Request2 request) {
-
+    	
         //handle method
         System.out.println("Processing Request: ");
-        //System.out.println(request.getMethod().equals("GET"));
         Response2 response = new Response2();
         response.setVersion(request.getVersion());
         response.addHeader("Host", serverSocket.getInetAddress().getHostAddress());
@@ -106,8 +102,6 @@ public class HttpServer {
         
         //Validate request headers
         if (request.getMethod().equals("GET")) {
-        	//Build response object
-            //response.addHeader("Host", serverSocket.getInetAddress().getHostName());            
             String[] path = request.getResource().split("\\.");
 
             if (path[1].equals("txt")) {
@@ -119,14 +113,20 @@ public class HttpServer {
             	return response;
             }
         	System.out.println(request.getResource());
-            //System.out.println(request);
             String body="";
             try {
             	File file = new File(request.getResource());
-                Scanner sc = new Scanner(file);
-                while (sc.hasNextLine()) {
-                  body = sc.nextLine();
-                }
+            	if(file.canRead()) {
+            		Scanner sc = new Scanner(file);
+                    while (sc.hasNextLine()) {
+                      body = sc.nextLine();
+                    }
+            	}
+            	else {
+            		response.setStatusCode(Status.UNAUTHORIZED);
+            		response.setBody("Client doesn't have permission to read file");
+            	}
+                
             } catch (FileNotFoundException e) {         	
             	response.setStatusCode(Status.NOT_FOUND);
             	response.setBody("File has not been found");
@@ -137,47 +137,59 @@ public class HttpServer {
         }
         
         else if (request.getMethod().equals("POST")) {
-        	//check content-length
-        	//body set in stream parser?
 
         	try {
-        		File file = new File(request.getResource());
-    			FileWriter w = new FileWriter(file);
-    			//System.out.println(file.createNewFile());
-				if (file.createNewFile()) {
-					w.write(request.getBody());
-					w.close();
-					System.out.println("check");
-					//response.setBody(request.getBody());
-					response.setStatusCode(Status.CREATED);
-				}
-				else {
-					
-				}
-			} catch(FileNotFoundException e) {
-				
-				System.out.println("YOHBHB");
-			}
-        	catch (IOException e) {
-				e.getStackTrace();
-				response.setStatusCode(Status.NOT_FOUND);
-            	response.setBody("File has not been found");
-			}
+                System.out.println(request.getResource());
+                String dir="./";
+                File file = null;
+                if (request.getResource().contains("/")) {
+                	dir += request.getResource().substring(0, request.getResource().lastIndexOf('/')+1);
+                	System.out.println(dir);
+            		file = new File(dir);
+            		System.out.println(file.mkdirs());
+                }
+                file = new File("./", request.getResource());
+                //file.setReadOnly();
+                boolean fileCreated = file.createNewFile();
+                System.out.println(fileCreated);
+
+                FileWriter w = new FileWriter(file);
+                if (fileCreated) {
+                    if (file.canRead() && file.canWrite()) {
+                        response.setStatusCode(Status.CREATED);
+                    }
+                    else {
+                    	response.setStatusCode(Status.UNAUTHORIZED);
+                        response.setBody("Client does not have read or write access to the file");
+
+                    }
+                }
+                else {
+                    response.setStatusCode(Status.OK);
+                }
+                w.write(request.getBody());
+                w.close();
+                response.addHeader("Content-Length", request.getBody().getBytes().length+"");
+                response.addHeader("Content-Type", "text/html");
+  
+            } catch (IOException e) {
+                e.getStackTrace();
+                response.setStatusCode(Status.NOT_FOUND);
+                response.setBody("File has not been found");
+            }
+
         }
         else {
         	System.out.println("Invalid method was provided, please choose 'GET' or 'POST'");
         }
 
         //Build response object
-        //response.addHeader("Host", serverSocket.getInetAddress().getHostName());
-        //response.setBody("LMAO\r\nThis is List!");
         response.toString();
         System.out.println(response);
 
         return response;
     }
 
-	//String[] args = {"get", "hello"};
 
     public static void main(String[] args) throws UnknownHostException, IOException
     {

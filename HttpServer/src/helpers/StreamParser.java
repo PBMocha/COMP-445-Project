@@ -29,19 +29,9 @@ public class StreamParser {
 
        	String line = reader.readLine();
        	
-       	System.out.println("All" + line);
        	String[] requestLine = line.split(" ");
-       	/*if (requestLine[1].contains(" ")) {
-           	String[] path = requestLine[1].split(" ");
-           	System.out.println(path[0]);
-       	}*/
-       	for(int i=0; i <requestLine.length; i++) {
-       		System.out.println("Test" + requestLine[i]);
-       	}
 
         Request2 request = new Request2(requestLine[0], requestLine[1].replaceFirst("/",""), requestLine[2]);
-
-        //System.out.println("test"+ request.getHeader("Content-Length"));
 
 
         //Parse Headers
@@ -49,7 +39,6 @@ public class StreamParser {
         while (!line.isEmpty()) {
         	System.out.println(line);
             String[] headerContent = line.split(":", 2);
-            //System.out.println(headerContent);
             request.addHeader(headerContent[0].trim(), headerContent[1].trim());
             line = reader.readLine();
         }
@@ -60,11 +49,10 @@ public class StreamParser {
 
             reader.read(bodyBytes);
             request.setBody(String.valueOf(bodyBytes));
-            System.out.println(request.getBody());
+            //System.out.println(request.getBody());
         }
 
         //Checks for body
-        //if (request.g)
 
         return request;
     }
