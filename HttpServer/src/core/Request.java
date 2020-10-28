@@ -28,6 +28,14 @@ public class Request {
         return method;
     }
 
+    public String getResource() {
+        return resource;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
     public Request addHeader(String key, String value) {
         headers.put(key, value);
         return this;
@@ -39,6 +47,10 @@ public class Request {
 
     public void setBody(String body) {
         this.body = body;
+    }
+
+    public String getBody() {
+        return body;
     }
 
     public String toString() {
