@@ -81,11 +81,27 @@ public class HttpServer {
         }
     }
 
-    public void addRoute(String method, String location, File file) {
-
-
+    /*public void addRoute(String method, String location, File file) {
+    }*/
+    
+    public void returnFiles(String path, Response2 response){
+    	File f = new File(path);
+        
+        if(f.isDirectory()) {
+        	String[] filenames = f.list();
+        	for (int i=0; i<filenames.length; i++) {        		
+        		if (filenames[i].contains(".txt")) {
+            		//System.out.println("TEXT" +filenames[i]);
+        			response.setBody(filenames[i] +"\n");
+        		}
+        		else {
+            		//System.out.println("FOLDER"+filenames[i]);
+        			returnFiles(path +"/"+filenames[i], response);
+        		}
+        	}
+        }        
     }
-
+    
     private Response2 handleRequest(Request2 request) {
     	
         //handle method
@@ -103,16 +119,25 @@ public class HttpServer {
         //Validate request headers
         if (request.getMethod().equals("GET")) {
             String[] path = request.getResource().split("\\.");
-
-            if (path[1].equals("txt")) {
+            
+            File f = new File(path[0]);
+            
+            if (request.getResource().contains("txt")) {
                 response.addHeader("Content-Type","text/html");
             }
+            else if(f.isDirectory()) {
+            	returnFiles(request.getResource(), response);
+            	response.setStatusCode(Status.OK);
+            	response.toString();
+            	return response;
+            }         
             else {
             	response.setStatusCode(Status.BAD_REQUEST);
             	response.toString();
             	return response;
             }
-        	System.out.println(request.getResource());
+  
+        	//System.out.println(request.getResource());
             String body="";
             try {
             	File file = new File(request.getResource());

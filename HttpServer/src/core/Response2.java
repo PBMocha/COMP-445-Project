@@ -52,7 +52,7 @@ public class Response2 {
     }
 
     public void setBody(String body) {
-        this.body = body;
+        this.body += body;
     }
 
     public String toString() {
