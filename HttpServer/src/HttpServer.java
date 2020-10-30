@@ -1,6 +1,5 @@
 import core.Request;
 import core.Response;
-import helpers.HttpRouter;
 import helpers.Status;
 import helpers.StreamParser;
 
@@ -13,9 +12,9 @@ public class HttpServer {
 
 
     private ServerSocket serverSocket;
-    private Socket clientSocket;
     private int port;
     private String rootDir;
+    private boolean isVerbose = false;
 
     public HttpServer() {
         this(80);
@@ -28,7 +27,13 @@ public class HttpServer {
     public HttpServer(int port, String rootDir) {
         this.port = port;
         this.rootDir = rootDir;
+        this.isVerbose = false;
 
+    }
+    public HttpServer(int port, String rootDir, boolean isVerbose) {
+        this.port = port;
+        this.rootDir = rootDir;
+        this.isVerbose = isVerbose;
     }
 
     //Start the http server and wait for client requests
@@ -54,12 +59,13 @@ public class HttpServer {
                 Request req = StreamParser.buildHttpRequest(input);
                 //input.close();
 
-                //String rawRequest = input.readUTF();
-                System.out.println("Request Received:" + client.toString());
-
                 //Send back response to client
 
                 Response response = handleRequest(req);
+                if (isVerbose) {
+                    System.out.println("Recieved Request ... \n" + req.toString() + "\n");
+                    System.out.println("Responded to " + client.getInetAddress() + " with ...\n" + response.toString());
+                }
 
                 out.print(response.toString() + "\r\n");
                 out.flush();
@@ -108,8 +114,7 @@ public class HttpServer {
 
     private Response handleRequest(Request request) {
 
-        //handle method
-        System.out.println("Processing Request: ");
+        //System.out.println("Processing Request: ");
         Response response = new Response();
         response.setVersion(request.getVersion());
         response.addHeader("Host", serverSocket.getInetAddress().getHostAddress());
@@ -131,12 +136,12 @@ public class HttpServer {
             else if(f.isDirectory()) {
                 returnFiles(rootDir+request.getResource(), response);
                 response.setStatusCode(Status.OK);
-                System.out.println(response.toString());
+                //System.out.println(response.toString());
                 return response;
             }
             else {
                 response.setStatusCode(Status.BAD_REQUEST);
-                response.toString();
+                //response.toString();
                 return response;
             }
 
@@ -152,7 +157,10 @@ public class HttpServer {
                 else if(file.canRead()) {
                     Scanner sc = new Scanner(file);
                     while (sc.hasNextLine()) {
-                        body = sc.nextLine();
+                        body += sc.nextLine();
+                        if (sc.hasNextLine()) {
+                            body += "\n";
+                        }
                     }
                 }
                 else {
@@ -168,23 +176,22 @@ public class HttpServer {
             response.setBody(body);
             response.addHeader("Content-Length", body.getBytes().length +"");
         }
-
         else if (request.getMethod().equals("POST")) {
 
             try {
-                System.out.println(request.getResource());
+                //System.out.println(request.getResource());
                 String dir = "";
                 File file = null;
                 if (request.getResource().contains("/")) {
                     dir += request.getResource().substring(0, request.getResource().lastIndexOf('/')+1);
                     System.out.println(dir);
                     file = new File(rootDir, dir);
-                    System.out.println(file.mkdirs());
+                    //System.out.println(file.mkdirs());
                 }
                 file = new File(rootDir, request.getResource());
                 //file.setReadOnly();
                 boolean fileCreated = file.createNewFile();
-                System.out.println(fileCreated);
+                //System.out.println(fileCreated);
 
                 FileWriter w = new FileWriter(file);
                 if (fileCreated) {
@@ -218,16 +225,8 @@ public class HttpServer {
         }
 
         //Build response object
-        response.toString();
-        System.out.println(response);
+        //response.toString();
 
         return response;
-    }
-
-    public static void main(String[] args)
-    {
-
-        HttpServer server = new HttpServer(80, "./doc");
-        server.start();
     }
 }
