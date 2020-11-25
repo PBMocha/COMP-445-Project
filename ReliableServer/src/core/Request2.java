@@ -5,7 +5,7 @@ import helpers.Method;
 import java.net.DatagramPacket;
 import java.util.HashMap;
 
-public class Request {
+public class Request2 {
 
     private String method;
     private String resource;
@@ -13,11 +13,11 @@ public class Request {
     private HashMap<String, String> headers;
     private String body;
 
-    public Request(String method, String resource) {
+    public Request2(String method, String resource) {
         this(method, resource, "HTTP/1.0");
     }
 
-    public Request(String method, String resource, String version) {
+    public Request2(String method, String resource, String version) {
         this.method = method;
         this.resource = resource;
         this.version = version;
@@ -37,7 +37,7 @@ public class Request {
         return version;
     }
 
-    public Request addHeader(String key, String value) {
+    public Request2 addHeader(String key, String value) {
         headers.put(key, value);
         return this;
     }

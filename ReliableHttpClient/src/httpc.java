@@ -11,7 +11,8 @@ public class httpc {
 
         HttpClient client = new HttpClient();
 
-        Request req = (new Request.RequestBuilder(HttpMethod.GET, new Url("127.0.0.1/"))).build();
-        client.send(req);
+        Request req = (new Request.RequestBuilder(HttpMethod.GET, new Url("127.0.0.1/"))).body("testing").build();
+        short port = 80;
+        client.sendto(req,port);
     }
 }

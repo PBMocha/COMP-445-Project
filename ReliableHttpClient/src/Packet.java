@@ -12,7 +12,7 @@ public class Packet {
     private byte type;
     private int seqNumber;
     private InetAddress peerAddress;
-    private short peerPort;
+    private short peerPort=80;
     private byte[] payload;
 
     public Packet(byte type, int seqNumber, InetAddress peerAddress, short peerPort, byte[] payload) {
@@ -21,8 +21,8 @@ public class Packet {
         this.peerAddress = peerAddress;
         this.peerPort = peerPort;
         this.payload = payload;
-    }
-
+    } 
+    
     public byte getType() {
         return type;
     }

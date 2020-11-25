@@ -1,6 +1,7 @@
 import core.Packet;
-import core.Request;
-import core.Response;
+import core.Request2;
+//import core.Response;
+import core.Response2;
 import helpers.Status;
 
 import java.io.*;
@@ -104,7 +105,7 @@ public class HttpServer {
             //3: ACK from client
             serverSocket.receive(dg);
             packet = Packet.fromBytes(ByteBuffer.wrap(dg.getData()));
-            System.out.println("recieved (3): " + packet.toString());
+            System.out.println("receved (3): " + packet.toString());
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -113,7 +114,7 @@ public class HttpServer {
     }
 
     //Peak Engineering btw
-    public void returnFiles(String path, Response response){
+    public void returnFiles(String path, Response2 response){
         File f = new File(path);
 
         if(f.isDirectory()) {
@@ -121,7 +122,7 @@ public class HttpServer {
             for (int i=0; i<filenames.length; i++) {
                 if (filenames[i].contains(".txt")) {
                     //System.out.println("TEXT" +filenames[i]);
-                    response.setBody(response.getBody() + f.getPath() + "\\" + filenames[i] +"\n");
+                    response.setBody(response.getBody() + f.getPath() + "\\" + filenames[i] +"\n"); //create response body functions
                 }
                 else {
                     //System.out.println("FOLDER"+filenames[i]);
@@ -131,10 +132,10 @@ public class HttpServer {
         }
     }
 
-    private Response handleRequest(Request request) {
+    private Response2 handleRequest(Request2 request) {
 
         //System.out.println("Processing Request: ");
-        Response response = new Response();
+        Response2 response = new Response2();
         response.setVersion(request.getVersion());
         response.addHeader("Host", serverSocket.getInetAddress().getHostAddress());
         response.addHeader("Date", java.util.Calendar.getInstance().getTime() + "");
@@ -226,7 +227,7 @@ public class HttpServer {
                 else {
                     response.setStatusCode(Status.OK);
                 }
-                w.write(request.getBody());
+                w.write(request.getBody()); //get message body?
                 w.close();
                 response.addHeader("Content-Length", request.getBody().getBytes().length+"");
                 response.addHeader("Content-Type", "text/html");
