@@ -11,7 +11,11 @@ public class httpc {
 
         HttpClient client = new HttpClient();
 
-        Request req = (new Request.RequestBuilder(HttpMethod.GET, new Url("127.0.0.1/"))).build();
-        client.send(req);
+        Request req = (new Request.RequestBuilder(HttpMethod.GET, new Url("127.0.0.1/")))
+                .header("Content-Type", "html/text")
+                .header("Keep-Alive", "Yes pls")
+                .body(new String((new byte[4000])))
+                .build();
+        client.sendto(req, (short)80);
     }
 }

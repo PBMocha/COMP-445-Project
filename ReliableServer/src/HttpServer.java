@@ -1,4 +1,5 @@
 import core.Packet;
+import core.ReliableSocket;
 import core.Request;
 import core.Response;
 import helpers.Status;
@@ -7,6 +8,9 @@ import java.io.*;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Scanner;
 
 public class HttpServer {
@@ -47,24 +51,20 @@ public class HttpServer {
             //Wait for a client to connect
             while (true) {
 
+//                byte[] buf = new byte[Packet.MAX_BYTES];
+//                DatagramPacket dgPck = new DatagramPacket(buf, buf.length);
 
-                byte[] buf = new byte[Packet.MAX_BYTES];
-                DatagramPacket dgPck = new DatagramPacket(buf, buf.length);
+                //Wraps the udp socket into reliable socket
+                ReliableSocket reliableSocket = new ReliableSocket(serverSocket);
 
-                serverSocket.receive(dgPck);
+                //Receive request
+                reliableSocket.receive();
 
-                //Initiate "TCP" 3-handshake
-                handshake(dgPck);
-
-                //Selective Repeat protocol
-
-//                String data = new String(packet.getData());
-//                System.out.println(data);
-//
-//                String res = "Pong";
-//                packet.setData(res.getBytes());
+                //Build response
 
                 //serverSocket.send(packet);
+
+
 
                 if (isVerbose) {
 
@@ -111,6 +111,54 @@ public class HttpServer {
         }
 
     }
+
+    private void selectiveRepeatRecieve() throws IOException {
+
+        //ArrayList for managing seq numbers and window frame
+        //True if packet with seq number i is received
+        List<Boolean> seqN = createSeqNFrame(10);
+
+        //Window frame represented using index pointers: interval = [winBeg, winEnd)
+        int windowSize = (int)Math.floor(seqN.size() / 2);
+        int winBeg = 0;
+
+        //Keep receiving packets
+        while(seqN.contains(false)) {
+
+            int winEnd = winBeg + windowSize;
+
+            //Receive and Parse packet
+            byte[] buf = new byte[Packet.MAX_BYTES];
+            DatagramPacket dg = new DatagramPacket(buf, buf.length);
+            serverSocket.receive(dg);
+            Packet packet = Packet.fromBytes(ByteBuffer.wrap(dg.getData()));
+            int curSeqNum = packet.getSeqNumber();
+            System.out.println("received sn: " + curSeqNum);
+
+            //Send back ACK
+            packet.setType((byte)2);
+            dg.setData(packet.toBytes());
+            serverSocket.send(dg);
+
+            //Shift window if curSeqNumber is oldest packet
+            if (curSeqNum == winBeg && winEnd != seqN.size()) {
+                winBeg++;
+            }
+        }
+    }
+
+
+
+    private ArrayList<Boolean> createSeqNFrame(int size) {
+
+        ArrayList<Boolean> frame = new ArrayList<>(size);
+        for (int cnt = 0; cnt < size; cnt++) {
+            frame.add(false);
+        }
+
+        return frame;
+    }
+
 
     //Peak Engineering btw
     public void returnFiles(String path, Response response){

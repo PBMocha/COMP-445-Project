@@ -210,7 +210,7 @@ public class CommandLine {
             return;
         }
         //Send request
-        Response response = client.send(null);
+        Response response = null; //client.sendto(null, (short)80);
         String responseStr = (optionPresent("-v") || args[0].equals("trace")) ? response.toString() : response.getDataRaw();
 
         if (optionPresent("-o")) {
