@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+<<<<<<< HEAD
 	<classpathentry kind="src" path="NetworkTesting/src"/>
 	<classpathentry kind="src" path="ReliableHttpClient/src"/>
 	<classpathentry kind="src" path="ReliableServer/src"/>
+=======
+	<classpathentry kind="src" path="HttpClient/src"/>
+	<classpathentry kind="src" path="HttpServer/src"/>
+	<classpathentry kind="src" path="NetworkTesting/src"/>
+>>>>>>> ccd1ef884f89b0d5d1d1cd4c9f6621bcc782ea52
 	<classpathentry kind="output" path="bin"/>
 </classpath>

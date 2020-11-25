@@ -2,7 +2,11 @@ package helpers;
 
 public enum Status {
     OK(200, "OK"),
+<<<<<<< HEAD
     CREATED(201, "Created"),
+=======
+    CREATED(201,"File Created"),
+>>>>>>> ccd1ef884f89b0d5d1d1cd4c9f6621bcc782ea52
     BAD_REQUEST(400, "Bad Request"),
     UNAUTHORIZED(401, "Unauthorized"),
     NOT_FOUND(404, "Not Found"),
