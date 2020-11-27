@@ -1,5 +1,6 @@
 package core;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -9,6 +10,26 @@ import java.util.HashMap;
 import java.util.List;
 
 public class ReliableSocket {
+
+    private enum PckType{
+        NACK((byte)0),
+        ACK((byte)1),
+        SENT((byte)2),
+        SYN((byte)3),
+        SYN_ACK((byte)4),
+        FIN((byte)5),
+        DATA((byte)6);
+
+        private byte value;
+
+        private PckType (byte value) {
+            this.value = value;
+        }
+        private byte raw() {
+            return  value;
+        }
+    }
+
 
     private DatagramSocket socket;
 
@@ -22,6 +43,7 @@ public class ReliableSocket {
     }
 
     //Uses Selective Repeat protocol to receive packets
+    //
     public void receive() throws IOException {
         byte[] buf = new byte[Packet.MAX_BYTES];
         DatagramPacket dg = new DatagramPacket(buf, buf.length);
@@ -33,50 +55,55 @@ public class ReliableSocket {
         //ArrayList for managing seq numbers and window frame
         //True if packet with seq number i is received
         List<Boolean> seqN = createSeqNFrame(10);
+        List<Packet> buffer = new ArrayList<>(); // just to store the packets in here
 
         //Window frame represented using index pointers: interval = [winBeg, winEnd)
         int windowSize = (int)Math.floor(seqN.size() / 2);
         int winBeg = 0;
         int winEnd = winBeg + windowSize;
-        //Keep receiving packets until all packets
+        //Keep receiving packets until all packets have been ACK
         while(seqN.contains(false)) {
 
             //Receive packet
             socket.receive(dg);
             Packet packet = Packet.fromBytes(ByteBuffer.wrap(dg.getData()));
             int recSeqNum = packet.getSeqNumber();
-            System.out.println("received seq_n: " + recSeqNum);
+            System.out.println("received pkt: " + packet.toString());
 
             //Send NACK if packet was not received correctly
 
+
             //If packet was already ack by receiver, resend ack
             //Send back ACK
-            packet.setType((byte)1);
+            packet.setType(PckType.ACK.value);
             dg.setData(packet.toBytes());
             socket.send(dg);
             seqN.set(recSeqNum, true);
+            System.out.println("sent pkt: " + packet.toString());
+            if (!buffer.stream().anyMatch( pck -> pck.getSeqNumber() == recSeqNum)) {
+                buffer.add(packet);
+            }
 
-            //Shift window if curSeqNumber is oldest packet
-            int i = recSeqNum;
-            //Keep moving window to next unreceived packet
-            while(seqN.get(i) && winEnd != seqN.size()) {
-                winBeg = i++;
-                winEnd = winBeg + windowSize;
+            if (seqN.get(recSeqNum) && winEnd < seqN.size()) {
+                //Shift window if curSeqNumber is oldest packet
+                int i = recSeqNum;
+                //Keep moving window to next unreceived packet
+                while (seqN.get(i) && winEnd != seqN.size()) {
+                    winBeg = i++;
+                    winEnd = winBeg + windowSize;
+                }
+                System.out.println("New Window: " + winBeg + ", " + winEnd);
             }
 
         }
+        buffer.forEach(x -> System.out.print(x.toString() + "payload: " + x.getPayload().length));
+
     }
 
 
     public void send(String message) {
 
         HashMap<Integer, Packet> packets = partitionPacket(message);
-
-
-
-
-
-
 
     }
 

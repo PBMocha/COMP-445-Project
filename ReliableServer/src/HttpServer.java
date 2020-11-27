@@ -1,7 +1,7 @@
 import core.Packet;
 import core.ReliableSocket;
-import core.Request;
-import core.Response;
+import core.RSRequest;
+import core.RSResponse;
 import helpers.Status;
 
 import java.io.*;
@@ -139,6 +139,7 @@ public class HttpServer {
             packet.setType((byte)2);
             dg.setData(packet.toBytes());
             serverSocket.send(dg);
+            System.out.println("ACK sent for packet " + curSeqNum);
 
             //Shift window if curSeqNumber is oldest packet
             if (curSeqNum == winBeg && winEnd != seqN.size()) {
@@ -161,7 +162,7 @@ public class HttpServer {
 
 
     //Peak Engineering btw
-    public void returnFiles(String path, Response response){
+    public void returnFiles(String path, RSResponse response){
         File f = new File(path);
 
         if(f.isDirectory()) {
@@ -179,10 +180,10 @@ public class HttpServer {
         }
     }
 
-    private Response handleRequest(Request request) {
+    private RSResponse handleRequest(RSRequest request) {
 
         //System.out.println("Processing Request: ");
-        Response response = new Response();
+        RSResponse response = new RSResponse();
         response.setVersion(request.getVersion());
         response.addHeader("Host", serverSocket.getInetAddress().getHostAddress());
         response.addHeader("Date", java.util.Calendar.getInstance().getTime() + "");
