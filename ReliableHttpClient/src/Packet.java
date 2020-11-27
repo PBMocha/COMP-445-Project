@@ -100,7 +100,8 @@ public class Packet {
         return  "type: " + type +"\t" +
                 "seq number: " + seqNumber +"\t" +
                 "port: " + peerPort +"\t" +
-                "address: " + peerAddress.getHostAddress() +"\n";
+                "address: " + peerAddress.getHostAddress() +"\t" +
+                "payload-len: " + payload.length + "\n";
 
     }
 
