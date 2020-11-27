@@ -1,6 +1,6 @@
 package helpers;
 
-import core.Request;
+import core.Request2;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,16 +25,19 @@ public class StreamParser {
         return stringBuilder.toString();
     }
 
-    public static Request buildHttpRequest(BufferedReader reader) throws IOException {
+    public static Request2 buildHttpRequest(BufferedReader reader) throws IOException {
 
-        String line = reader.readLine();
-        String[] requestLine = line.split(" ");
+       	String line = reader.readLine();
+       	
+       	String[] requestLine = line.split(" ");
 
-        Request request = new Request(requestLine[0], requestLine[1], requestLine[2]);
+        Request2 request = new Request2(requestLine[0], requestLine[1].replaceFirst("/",""), requestLine[2]);
+
 
         //Parse Headers
         line = reader.readLine();
         while (!line.isEmpty()) {
+        	System.out.println(line);
             String[] headerContent = line.split(":", 2);
             request.addHeader(headerContent[0].trim(), headerContent[1].trim());
             line = reader.readLine();
@@ -46,6 +49,7 @@ public class StreamParser {
 
             reader.read(bodyBytes);
             request.setBody(String.valueOf(bodyBytes));
+            //System.out.println(request.getBody());
         }
 
         //Checks for body

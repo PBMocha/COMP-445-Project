@@ -18,13 +18,14 @@ public class TestConnection {
             //DataOutputStream out = new DataOutputStream(new BufferedOutputStream(outToServer));
             OutputStreamWriter out = new OutputStreamWriter(outToServer);
 
-            out.write("Hello from " + client.getLocalSocketAddress() + "\r\nWhats up\r\nlolol\r\n\rn\r\n");
+            out.write("GET /test.txt HTTP/1.1");
             out.flush();
 
             InputStream inFromServer = client.getInputStream();
             BufferedReader in = new BufferedReader(new InputStreamReader(inFromServer));
-
+            //System.out.println(in);
             System.out.println("Server says " + in.readLine());
+
             client.close();
         } catch (IOException e) {
             e.printStackTrace();
