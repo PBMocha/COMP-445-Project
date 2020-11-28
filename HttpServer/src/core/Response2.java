@@ -3,22 +3,22 @@ package core;
 import helpers.Status;
 import java.util.HashMap;
 
-public class Response {
+public class Response2 {
 
     private Status statusCode;
     private String version;
     private HashMap<String, String> headers;
     private String body;
 
-    public Response() {
+    public Response2() {
         this(Status.OK, "HTTP/1.0");
     }
 
-    public Response(Status statusCode) {
+    public Response2(Status statusCode) {
         this(statusCode, "HTTP/1.0");
     }
 
-    public Response(Status statusCode, String version) {
+    public Response2(Status statusCode, String version) {
 
         this.statusCode = statusCode;
         this.version = version;
@@ -26,7 +26,7 @@ public class Response {
         this.headers = new HashMap<>();
     }
 
-    public Response addHeader(String key, String value) {
+    public Response2 addHeader(String key, String value) {
         headers.put(key, value);
         return this;
     }
@@ -52,7 +52,7 @@ public class Response {
     }
 
     public void setBody(String body) {
-        this.body = body;
+        this.body += body;
     }
 
     public String toString() {

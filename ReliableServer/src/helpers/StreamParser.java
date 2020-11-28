@@ -1,6 +1,7 @@
 package helpers;
 
-import core.Request;
+import core.RSRequest;
+
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,12 +26,14 @@ public class StreamParser {
         return stringBuilder.toString();
     }
 
-    public static Request buildHttpRequest(BufferedReader reader) throws IOException {
+    public static RSRequest buildHttpRequest(BufferedReader reader) throws IOException {
+
 
         String line = reader.readLine();
         String[] requestLine = line.split(" ");
 
-        Request request = new Request(requestLine[0], requestLine[1], requestLine[2]);
+        RSRequest request = new RSRequest(requestLine[0], requestLine[1], requestLine[2]);
+
 
         //Parse Headers
         line = reader.readLine();
