@@ -2,6 +2,9 @@ package core;
 
 import helpers.Method;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
 import java.net.DatagramPacket;
 import java.util.HashMap;
 
@@ -63,5 +66,35 @@ public class Request {
         httpBuilder.append(System.lineSeparator());
         httpBuilder.append(body);
         return httpBuilder.toString();
+    }
+
+    public static Request fromBuffer(BufferedReader reader) throws IOException {
+
+        String line = reader.readLine();
+        String[] requestLine = line.split(" ");
+
+        Request request = new Request(requestLine[0], requestLine[1], requestLine[2]);
+
+        //Parse Headers
+        line = reader.readLine();
+        while (!line.isEmpty()) {
+            String[] headerContent = line.split(":", 2);
+            request.addHeader(headerContent[0].trim(), headerContent[1].trim());
+            line = reader.readLine();
+        }
+
+        if (request.getHeader("Content-Length") != null) {
+            int contentLength = Integer.parseInt(request.getHeader("Content-Length"));
+            char[] bodyBytes = new char[contentLength];
+
+            reader.read(bodyBytes);
+            request.setBody(String.valueOf(bodyBytes));
+        }
+
+        //Checks for body
+
+        return request;
+
+
     }
 }

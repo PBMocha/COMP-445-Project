@@ -11,7 +11,7 @@ public class Response {
     private String dataRaw;
     private BufferedReader input;
 
-    public Response(InputStream in)
+    public Response(BufferedReader in)
     {
         headers = new HashMap<String, String>();
 
@@ -20,11 +20,11 @@ public class Response {
         parseResponse(in);
     }
 
-    private void parseResponse(InputStream _in)
+    private void parseResponse(BufferedReader input)
     {
 
         try {
-            input = new BufferedReader(new InputStreamReader(_in));
+
             StringBuilder response = new StringBuilder();
             String line;
 
@@ -61,11 +61,7 @@ public class Response {
 
     private void closeConnection()
     {
-        try {
-            input.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
     }
 
     public String toString()

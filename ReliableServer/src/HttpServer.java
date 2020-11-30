@@ -7,6 +7,7 @@ import helpers.Status;
 import java.io.*;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,24 +21,21 @@ public class HttpServer {
     private int port;
     private String rootDir;
     private boolean isVerbose = false;
+    private InetAddress serverAddress;
 
-    public HttpServer() {
+    public HttpServer() throws IOException {
         this(80);
     }
 
-    public HttpServer(int port) {
-        this(port, "./");
+    public HttpServer(int port) throws IOException {
+        this(port, "./", false);
     }
 
-    public HttpServer(int port, String rootDir) {
-        this.port = port;
-        this.rootDir = rootDir;
-        this.isVerbose = false;
-    }
-    public HttpServer(int port, String rootDir, boolean isVerbose) {
+    public HttpServer(int port, String rootDir, boolean isVerbose) throws IOException{
         this.port = port;
         this.rootDir = rootDir;
         this.isVerbose = isVerbose;
+        this.serverAddress = InetAddress.getByName("127.0.0.1");
     }
 
     //Start the http server and wait for client requests
@@ -45,30 +43,38 @@ public class HttpServer {
         try {
 
             serverSocket = new DatagramSocket(port);
-            System.out.println("Server started on port: " + port);
+            System.out.println("Server started on port: " + port + "\nOn address: " + serverSocket.getLocalAddress());
             System.out.println("Waiting for client ...");
-
             //Wait for a client to connect
             while (true) {
 
-//                byte[] buf = new byte[Packet.MAX_BYTES];
-//                DatagramPacket dgPck = new DatagramPacket(buf, buf.length);
-
                 //Wraps the udp socket into reliable socket
                 ReliableSocket reliableSocket = new ReliableSocket(serverSocket);
+
+                if (!reliableSocket.handshake()) {
+                    //restart handshake
+                    continue;
+                }
 
                 //Receive request
                 reliableSocket.receive();
 
                 //Build response
+                Request request = Request.fromBuffer(reliableSocket.getInputBuffer());
+                System.out.println("Recieved Request:\n" + request.toString());
 
-                //serverSocket.send(packet);
+                Response response = handleRequest(request);
+                System.out.println("Created Response: \n" + response.toString());
 
-
+                reliableSocket.send(response.toString());
 
                 if (isVerbose) {
-
+                    System.out.println("processing request:\n" + request.toString());
+                    System.out.println("sending response:\n" + request.toString());
                 }
+
+                //Kill connection with this client
+                reliableSocket.disconnectClient();
 
             }
 
@@ -85,80 +91,7 @@ public class HttpServer {
         if (serverSocket != null) {
             serverSocket.close();
         }
-
     }
-
-    private void handshake(DatagramPacket dg) {
-
-        try {
-            //1: SYN from client
-            Packet packet = Packet.fromBytes(ByteBuffer.wrap(dg.getData()));
-            System.out.println("received (1): " + packet.toString());
-
-            //2: SYN+ACK
-            packet.setType((byte)2);
-            System.out.println("sending (2): " + packet.toString());
-            dg.setData(packet.toBytes());
-            serverSocket.send(dg);
-
-            //3: ACK from client
-            serverSocket.receive(dg);
-            packet = Packet.fromBytes(ByteBuffer.wrap(dg.getData()));
-            System.out.println("recieved (3): " + packet.toString());
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    private void selectiveRepeatRecieve() throws IOException {
-
-        //ArrayList for managing seq numbers and window frame
-        //True if packet with seq number i is received
-        List<Boolean> seqN = createSeqNFrame(10);
-
-        //Window frame represented using index pointers: interval = [winBeg, winEnd)
-        int windowSize = (int)Math.floor(seqN.size() / 2);
-        int winBeg = 0;
-
-        //Keep receiving packets
-        while(seqN.contains(false)) {
-
-            int winEnd = winBeg + windowSize;
-
-            //Receive and Parse packet
-            byte[] buf = new byte[Packet.MAX_BYTES];
-            DatagramPacket dg = new DatagramPacket(buf, buf.length);
-            serverSocket.receive(dg);
-            Packet packet = Packet.fromBytes(ByteBuffer.wrap(dg.getData()));
-            int curSeqNum = packet.getSeqNumber();
-            System.out.println("received sn: " + curSeqNum);
-
-            //Send back ACK
-            packet.setType((byte)2);
-            dg.setData(packet.toBytes());
-            serverSocket.send(dg);
-
-            //Shift window if curSeqNumber is oldest packet
-            if (curSeqNum == winBeg && winEnd != seqN.size()) {
-                winBeg++;
-            }
-        }
-    }
-
-
-
-    private ArrayList<Boolean> createSeqNFrame(int size) {
-
-        ArrayList<Boolean> frame = new ArrayList<>(size);
-        for (int cnt = 0; cnt < size; cnt++) {
-            frame.add(false);
-        }
-
-        return frame;
-    }
-
 
     //Peak Engineering btw
     public void returnFiles(String path, Response response){
@@ -184,8 +117,8 @@ public class HttpServer {
         //System.out.println("Processing Request: ");
         Response response = new Response();
         response.setVersion(request.getVersion());
-        response.addHeader("Host", serverSocket.getInetAddress().getHostAddress());
-        response.addHeader("Date", java.util.Calendar.getInstance().getTime() + "");
+        response.addHeader("Host", serverAddress.getCanonicalHostName());
+        response.addHeader("Date", java.util.Calendar.getInstance().getTime().toString());
         if (serverSocket.isClosed())
             response.addHeader("Connection", "closed");
         else

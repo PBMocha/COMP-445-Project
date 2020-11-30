@@ -143,7 +143,7 @@ public class CommandLine {
     }
 
     //The root of the program | the Highest layer
-    public void executeCommand()
+    public void executeCommand() throws IOException
     {
 
         if (args.length < 1) {
@@ -210,9 +210,12 @@ public class CommandLine {
             return;
         }
         //Send request
-        Response response = null; //client.sendto(null, (short)80);
+        client.send(request, (short)80);
+        client.receive();
+        Response response = new Response(client.getInputBuffer());
         String responseStr = (optionPresent("-v") || args[0].equals("trace")) ? response.toString() : response.getDataRaw();
 
+        client.disconnect();
         if (optionPresent("-o")) {
 
             try {

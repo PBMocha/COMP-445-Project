@@ -7,17 +7,17 @@ import java.nio.ByteOrder;
 
 public class Packet {
 
-    private static final int MIN_BYTES = 11;
-    private static final int MAX_PAYLOAD = 1013;
+    public static final int MIN_BYTES = 11;
+    public static final int MAX_PAYLOAD = 1013;
     public static final int MAX_BYTES = MIN_BYTES + MAX_PAYLOAD;
 
     private byte type;
     private int seqNumber;
     private InetAddress peerAddress;
-    private short peerPort;
+    private int peerPort;
     private byte[] payload;
 
-    public Packet(byte type, int seqNumber, InetAddress peerAddress, short peerPort, byte[] payload) {
+    public Packet(byte type, int seqNumber, InetAddress peerAddress, int peerPort, byte[] payload) {
         this.type = type;
         this.seqNumber = seqNumber;
         this.peerAddress = peerAddress;
@@ -37,7 +37,7 @@ public class Packet {
         return peerAddress;
     }
 
-    public short getPeerPort() {
+    public int getPeerPort() {
         return peerPort;
     }
 
@@ -90,7 +90,7 @@ public class Packet {
         byteBuffer.put(type);
         byteBuffer.putInt(seqNumber);
         byteBuffer.put(peerAddress.getAddress());
-        byteBuffer.putShort(peerPort);
+        byteBuffer.putShort((short)peerPort);
         byteBuffer.put(payload);
         byteBuffer.flip();
 
@@ -102,7 +102,8 @@ public class Packet {
         return  "type: " + type +"\t" +
                 "seq number: " + seqNumber +"\t" +
                 "port: " + peerPort +"\t" +
-                "address: " + peerAddress.getHostAddress() +"\n";
+                "address: " + peerAddress.getHostAddress() +"\t" +
+                "payload-len: " + payload.length + "";
 
     }
 
@@ -113,7 +114,7 @@ public class Packet {
         private byte type;
         private int seqNumber;
         private InetAddress peerAddress;
-        private short peerPort;
+        private int peerPort;
         private byte[] payload;
 
         public PacketBuilder() {
@@ -141,7 +142,7 @@ public class Packet {
             return this;
         }
 
-        public PacketBuilder setPeerPort(short peerPort) {
+        public PacketBuilder setPeerPort(int peerPort) {
 
             this.peerPort = peerPort;
             return this;
